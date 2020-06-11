@@ -26,7 +26,7 @@ class cashier
     {
         if($paid >= $cost) // Return amount if correct
         {
-            return($paid - $cost);   
+            return intval(($paid - $cost)*100);   
         }
         else
         {
@@ -36,26 +36,26 @@ class cashier
     
     public function getCustomerChange($cost, $paid) // get all change to give back to the customer
     {
-        $giveBack = $this->getChangeToGiveBack($cost, $paid)*100; // Compute total amount to give back & convert to cts
+        $giveBack = $this->getChangeToGiveBack($cost, $paid); // Compute total amount to give back & convert to cts
         $changeToGive = array();
         $temp_array = array_reverse($this->getAvailableChange(), true); // Reorder array to browse from higher amount to lower
         
         foreach($temp_array as $changeVal => $changeNb) // Browse available change
         {
-            if($changeVal <= $giveBack and $this->getCashNb($changeVal) > 0)  // Check if this amount is relevant and if still available
+            if($changeVal <= $giveBack and $changeNb > 0)  // Check if this amount is relevant and if still available
             {
                 $partInt = intval($giveBack/$changeVal); // Compute the max nb of items we can give back for this amount
-                if($partInt <= $this->getCashNb($changeVal)) // If max quantity available, give everything required for this amount
+                if($partInt <= $changeNb) // If max quantity available, give everything required for this amount
                 {
                     $giveBack -= $partInt*$changeVal;
                     $changeToGive[$changeVal] = $partInt;
                     $this->removeCash($changeVal, $partInt); // Update available change
                 }
-                elseif($partInt > $this->getCashNb($changeVal)) // If not enough quantity for this amount, give all we have in stock
+                elseif($partInt > $changeNb) // If not enough quantity for this amount, give all we have in stock
                 {
-                    $giveBack -= $this->getCashNb($changeVal)*$changeVal;
-                    $changeToGive[$changeVal] = $this->getCashNb($changeVal);
-                    $this->removeCash($changeVal, $this->getCashNb($changeVal)); // Update available change
+                    $giveBack -= $changeNb*$changeVal;
+                    $changeToGive[$changeVal] = $changeNb;
+                    $this->removeCash($changeVal, $changeNb); // Update available change
                 }
                 if($giveBack == 0) // Once we have enough to give the money back, break the loop
                 {

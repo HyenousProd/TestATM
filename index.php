@@ -28,9 +28,13 @@ require_once('class/cashier.class.php');
             echo "</ul>";
         
             //Check form 
-            if(isset($_POST['cost']) and $_POST['cost'] <= $_POST['paid'])
+            if((isset($_POST['cost']) and !is_numeric($_POST['cost'])) or (isset($_POST['paid']) and !is_numeric($_POST['paid'])))
             {
-                echo "<h2>You must give back ".$cash->getChangeToGiveBack($_POST['cost'], $_POST['paid'])."€</h2>";
+                echo "<h2>Invalid numbers</h2>";    
+            }
+            elseif(isset($_POST['cost']) and $_POST['cost'] <= $_POST['paid'])
+            {
+                echo "<h2>You must give back ".($cash->getChangeToGiveBack($_POST['cost'], $_POST['paid'])/100)."€</h2>";
                 $giveBack = $cash->getCustomerChange($_POST['cost'], $_POST['paid']);
                 if($giveBack == false)
                 {
